@@ -14,9 +14,7 @@ const drawer = ref(false);
   <AppNavigationDrawer v-model="drawer" />
 
   <v-main>
-    <v-container fluid>
-      <router-view />
-    </v-container>
+    <router-view />
   </v-main>
 
   <AppFooter />

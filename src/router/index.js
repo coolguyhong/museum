@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router/auto'
 
 import AppMain from '@/components/layout/AppMain.vue'
 import Main from '@/pages/index.vue'
+import RealEstate from '@/pages/realestate'
 import SignUp from '@/pages/SignUp.vue'
 import SignIn from '@/pages/SignIn.vue'
 
@@ -17,6 +18,11 @@ const routes = [
         path: '/main',
         name: 'Main',
         component: Main,
+      },
+      {
+        path: '/real-estate',
+        name: 'RealEstate',
+        component: RealEstate,
       }
     ]
   },
