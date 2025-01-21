@@ -7,114 +7,14 @@ const aptComplexName = ref('')
 
 const desserts = [
   {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
-  },
-  {
-    aptComplexName: 'Frozen Yogurt',
-    address: 159,
-    detailAddress: 6.0,
-    type: 24,
-    rent: 4.0,
-    contractStartDt: '1',
-    contractEndDt: '1',
-    rentalBusinessYn: '1',
+    aptComplexName: '동탄지웰에스테이트',
+    address: '경기도 화성시 동탄반석로 160',
+    detailAddress: 'B동 704호',
+    type: '오피스텔',
+    rent: '15000/7.5',
+    contractStartDt: '2024-03-02',
+    contractEndDt: '2025-03-02',
+    rentalBusinessYn: 'Y',
   },
 ]
 
@@ -136,7 +36,7 @@ const FakeAPI = {
           })
         }
 
-        const paginated = items.slice(start, end)
+        const paginated = items.slice(start, end === -1 ? undefined : end)
 
         resolve({ items: paginated, total: items.length })
       }, 500)
@@ -151,61 +51,72 @@ const headers = ref([
     align: 'center',
     sortable: false,
     key: 'aptComplexName',
+    width: 100,
   },
   {
     title: '주소',
     align: 'center',
     sortable: false,
-    key: 'address'
+    key: 'address',
+    width: 100,
   },
   {
     title: '상세주소',
     align: 'center',
     sortable: false,
-    key: 'detailAddress'
+    key: 'detailAddress',
+    width: 100,
   },
   {
     title: '유형',
     align: 'center',
     sortable: false,
-    key: 'type'
+    key: 'type',
+    width: 50,
   },
   { title: '임대료',
     align: 'center',
     sortable: false,
-    key: 'rent'
+    key: 'rent',
+    width: 100,
   },
   {
     title: '계약시작일',
     align: 'center',
-    key: 'contractStartDt'
+    key: 'contractStartDt',
+    width: 100,
   },
   {
     title: '계약종료일',
     align: 'center',
-    key: 'contractEndDt'
+    key: 'contractEndDt',
+    width: 100,
   },
   {
     title: '임대사업자',
     align: 'center',
     sortable: false,
-    key: 'rentalBusinessYn'
+    key: 'rentalBusinessYn',
+    width: 50,
   },
 ])
 const search = ref('')
 const serverItems = ref([])
 const loading = ref(true)
 const totalItems = ref(0)
+const sortBy = ref([{key: 'contractEndDt', order: 'asc'}])
 
-const loadItems = (page, itemsPerPage, sortBy) => {
+const loadItems = (options) => {
   loading.value = true
-  FakeAPI.fetch({ page, itemsPerPage, sortBy }).then(({ items, total }) => {
+  let page = options.page || 2
+  let perPage = options.itemsPerPage
+  let sortBy =  options.sortBy
+  FakeAPI.fetch({ page, perPage, sortBy }).then(({ items, total }) => {
     serverItems.value = items
     totalItems.value = total
     loading.value = false
   })
 }
-loadItems(0, 10, [{key: 'contractEndDt', order: 'desc'}])
 </script>
 
 <template>
@@ -262,6 +173,19 @@ loadItems(0, 10, [{key: 'contractEndDt', order: 'desc'}])
         </v-col>
       </v-row>
     </div>
+    <v-row
+      justify="end"
+      class="mt-10 mb-0"
+    >
+      <v-col cols="1">
+        <v-btn
+          size="large"
+          block
+        >
+          등록
+        </v-btn>
+      </v-col>
+    </v-row>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       :headers="headers"
@@ -269,7 +193,9 @@ loadItems(0, 10, [{key: 'contractEndDt', order: 'desc'}])
       :items-length="totalItems"
       :loading="loading"
       :search="search"
-      item-value="name"
+      :sort-by="sortBy"
+      show-select
+      item-value="aptComplexName"
       @update:options="loadItems"
     />
   </v-container>
