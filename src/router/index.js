@@ -1,9 +1,10 @@
 // Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
+import {createRouter, createWebHistory} from 'vue-router/auto'
 
 import AppMain from '@/components/layout/AppMain.vue'
 import Main from '@/pages/index.vue'
 import RealEstate from '@/pages/realestate'
+import RegistrationRealEstate from '@/pages/realestate/RegistrationRealEstate.vue'
 import SignUp from '@/pages/SignUp.vue'
 import SignIn from '@/pages/SignIn.vue'
 
@@ -21,8 +22,18 @@ const routes = [
       },
       {
         path: '/real-estate',
-        name: 'RealEstate',
-        component: RealEstate,
+        children: [
+          {
+            path: '',
+            name: 'RealEstate',
+            component: RealEstate,
+          },
+          {
+            path: 'registration',
+            name: 'RegistrationRealEstate',
+            component: RegistrationRealEstate,
+          },
+        ]
       }
     ]
   },
