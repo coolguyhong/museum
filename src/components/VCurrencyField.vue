@@ -3,9 +3,9 @@ import {useCurrencyInput} from 'vue-currency-input'
 import {watch} from 'vue'
 
 const props = defineProps({
-  // eslint-disable-next-line vue/require-default-prop
   modelValue: {
-    type: Number
+    type: Number,
+    default: 0,
   },
   suffix: {
     type: String,
@@ -23,13 +23,13 @@ const { inputRef, formattedValue, setValue } = useCurrencyInput({
   hideGroupingSeparatorOnFocus: false,
   precision: 0,
   valueRange: { min: 0 },
-});
+})
 watch(
   () => props.modelValue,
   (value) => {
     setValue(value)
   }
-);
+)
 </script>
 
 <template>

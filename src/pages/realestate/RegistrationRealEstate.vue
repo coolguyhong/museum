@@ -271,7 +271,6 @@ const changeHousingRentalBusiness = () => {
                     label="매수 가격*"
                     suffix="만원"
                     :error-messages="purchasePrice.errorMessage.value"
-                    @focus="test"
                   />
                 </v-col>
               </v-row>
