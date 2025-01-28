@@ -15,7 +15,8 @@
     "roboto-fontface": "*",
     "vee-validate": "^4.15.0",
     "vue": "^3.4.31",
-    "vuetify": "^3.6.14"
+    "vuetify": "^3.6.14",
+    "vue-currency-input": "^3.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",

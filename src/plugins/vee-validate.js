@@ -1,4 +1,4 @@
-import { defineRule } from 'vee-validate'
+import {defineRule} from 'vee-validate'
 
 const isEmpty = (value) => {
   if (value === null || value === undefined || value === '') {
@@ -70,10 +70,10 @@ defineRule('allowedSpecialCharacter', (value) => {
   if (isEmpty(value)) {
     return true
   }
-// 특수문자 중 ,./:`'[]-=<>"{}~!@#$%&*()_+ 이외의 문자 사용 불가
-  const allowedCharacter = /[^A-Za-z\d,./:`'[\]\-=<>"{}~!@#$%&*()_+]/
+  // 특수문자 중 ,./:`'[]-="{}~!@#$%&*()_+ 이외의 문자 사용 불가
+  const allowedCharacter = /[^A-Za-z\d,./:`'[\]\-="{}~!@#$%&*()_+]/
   if (allowedCharacter.test(value)) {
-    return '해당 특수문자만 사용할 수 있습니다.: ,./:`\'[]-=<>"{}~!@#$%&*()_+'
+    return '해당 특수문자만 사용할 수 있습니다.( ,./:`\'[]-="{}~!@#$%&*()_+ )'
   }
   return true
 })
@@ -106,6 +106,18 @@ defineRule('allowedEmailCharacter', (value) => {
   const emailPattern = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i
   if (!emailPattern.test(value)) {
     return '이메일 형식으로 입력해 주세요.'
+  }
+  return true
+})
+
+// detailAddress
+defineRule('allowedKoreanEnglishNumberSpecialCharacter', (value) => {
+  if (isEmpty(value)) {
+    return true
+  }
+  const allowedCharacter = /[^ㄱ-ㅎ|ㅏ-ㅣ|가-힣\d \dA-Za-z\d,./:`'[\]\-="{}~!@#$%&*()_+]/
+  if (allowedCharacter.test(value)) {
+    return '해당 특수문자만 사용할 수 있습니다.( ,./:`\'[]-="{}~!@#$%&*()_+ )'
   }
   return true
 })

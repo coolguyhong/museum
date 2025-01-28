@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { useField, useForm } from 'vee-validate'
+import {ref} from 'vue'
+import {useField, useForm} from 'vee-validate'
 
 const isValid = ref(false)
 const show1 = ref(false)
@@ -112,6 +112,7 @@ const submit = handleSubmit(values => {
                 <v-text-field
                   v-model="phone.value.value"
                   clearable
+                  hide-spin-buttons
                   hint="숫자만 입력해주세요"
                   prepend-icon="mdi-cellphone"
                   label="휴대폰"
