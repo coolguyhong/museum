@@ -3,8 +3,9 @@ import Breadcrumb from '@/components/Breadcrumb.vue'
 import ContentTitle from '@/components/ContentTitle.vue'
 import VCurrencyField from '@/components/VCurrencyField.vue'
 import {ref} from 'vue'
-import {useField, useForm} from "vee-validate"
-import {useDate} from 'vuetify'
+import {useField, useForm} from 'vee-validate'
+import {addDate, getFormatDate} from '@/utils/date.js'
+import {isEmpty} from "@/utils/validation.js";
 
 const isValid = ref(false)
 const { handleSubmit } = useForm({
@@ -78,22 +79,12 @@ const openPostcodePopup = () => {
   }).open()
 }
 
-const dateAdapter = useDate()
 const changePurchaseDate = (value) => {
-  purchaseDate.value.value = dateAdapter.getYear(value)
-    + '-' + (dateAdapter.getMonth(value) + 1).toString().padStart(2, '0')
-    + '-' + dateAdapter.getDate(value).toString().padStart(2, '0')
+  purchaseDate.value.value = getFormatDate(value, 'YYYY-MM-DD')
 }
 const changeHousingRentalStartDt = (value) => {
-  housingRentalStartDt.value.value = dateAdapter.getYear(value)
-    + '-' + (dateAdapter.getMonth(value) + 1).toString().padStart(2, '0')
-    + '-' + dateAdapter.getDate(value).toString().padStart(2, '0')
-  housingRentalDutyEndDt.value.value = (dateAdapter.getYear(value) + housingRentalType.value.value.duration)
-    + '-' + (dateAdapter.getMonth(value) + 1).toString().padStart(2, '0')
-    + '-' + dateAdapter.getDate(value).toString().padStart(2, '0')
-  displayHousingRentalDutyEndDt.value = (dateAdapter.getMonth(value) + 1).toString().padStart(2, '0')
-    + '/' + dateAdapter.getDate(value).toString().padStart(2, '0')
-    + '/' + (dateAdapter.getYear(value) + housingRentalType.value.value.duration)
+  housingRentalStartDt.value.value = getFormatDate(value, 'YYYY-MM-DD')
+  setHousingRentalDutyEndDt()
 }
 const housingRentalTypeItems = [
   { name: '5년임대주택(민간)', duration: 5 },
@@ -107,6 +98,25 @@ const housingRentalTypeItems = [
   { name: '공공지원민간임대주택(8년)', duration: 8 },
   { name: '공공지원민간임대주택(10년)', duration: 10 },
 ]
+const changeHousingRentalType = () => {
+  if (isEmpty(housingRentalStartDt.value.value)) {
+    return
+  }
+  setHousingRentalDutyEndDt()
+}
+
+const setHousingRentalDutyEndDt = () => {
+  housingRentalDutyEndDt.value.value = getFormatDate(
+    addDate(housingRentalStartDt.value.value, housingRentalType.value.value.duration, 'year'), 'YYYY-MM-DD')
+  displayHousingRentalDutyEndDt.value = getFormatDate(housingRentalDutyEndDt.value.value, 'MM/DD/YYYY')
+}
+
+const changeHousingRentalBusiness = () => {
+  housingRentalType.resetField()
+  housingRentalStartDt.resetField()
+  housingRentalDutyEndDt.resetField()
+  displayHousingRentalDutyEndDt.value = ''
+}
 </script>
 
 <template>
@@ -261,6 +271,7 @@ const housingRentalTypeItems = [
                     label="매수 가격*"
                     suffix="만원"
                     :error-messages="purchasePrice.errorMessage.value"
+                    @focus="test"
                   />
                 </v-col>
               </v-row>
@@ -296,6 +307,7 @@ const housingRentalTypeItems = [
                     v-model="isHousingRentalBusiness"
                     color="primary"
                     label="주택임대사업자 여부"
+                    @update:model-value="changeHousingRentalBusiness"
                   />
                 </v-col>
               </v-row>
@@ -312,6 +324,7 @@ const housingRentalTypeItems = [
                     return-object
                     label="주택임대 유형*"
                     :error-messages="housingRentalType.errorMessage.value"
+                    @update:model-value="changeHousingRentalType"
                   />
                 </v-col>
               </v-row>

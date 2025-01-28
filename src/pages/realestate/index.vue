@@ -2,7 +2,7 @@
 import ContentTitle from '@/components/ContentTitle.vue'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import {ref} from 'vue'
-import {useDate} from 'vuetify'
+import {getFormatDate} from '@/utils/date.js'
 
 const desserts = [
   {
@@ -272,14 +272,9 @@ const search = () => {
 
 const contractEndDtFrom = ref('')
 const contractEndDtTo = ref('')
-const dateAdapter = useDate()
 const changeContractEndDt = (value) => {
-  contractEndDtFrom.value = dateAdapter.getYear(value[1])
-    + '-' + (dateAdapter.getMonth(value[1]) + 1).toString().padStart(2, '0')
-    + '-' + dateAdapter.getDate(value[1]).toString().padStart(2, '0')
-  contractEndDtTo.value = dateAdapter.getYear(value[value.length - 1]).toString().padStart(2, '0')
-    + '-' + (dateAdapter.getMonth(value[value.length - 1]) + 1).toString().padStart(2, '0')
-    + '-' + dateAdapter.getDate(value[value.length - 1]).toString().padStart(2, '0')
+  contractEndDtFrom.value = getFormatDate(value[0], 'YYYY-MM-DD')
+  contractEndDtTo.value = getFormatDate(value[value.length - 1], 'YYYY-MM-DD')
   alert('changeContractEndDt: ' + contractEndDtFrom.value + ' ~ ' + contractEndDtTo.value)
 }
 </script>
