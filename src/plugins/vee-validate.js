@@ -65,7 +65,7 @@ defineRule('allowedSpecialCharacter', (value) => {
   // 특수문자 중 ,./:`'[]-="{}~!@#$%&*()_+ 이외의 문자 사용 불가
   const allowedCharacter = /[^A-Za-z\d,./:`'[\]\-="{}~!@#$%&*()_+]/
   if (allowedCharacter.test(value)) {
-    return '해당 특수문자만 사용할 수 있습니다.( ,./:`\'[]-="{}~!@#$%&*()_+ )'
+    return '해당 특수문자만 입력할 수 있습니다.( ,./:`\'[]-="{}~!@#$%&*()_+ )'
   }
   return true
 })
@@ -85,7 +85,7 @@ defineRule('allowedKoreanCharacter', (value) => {
   }
   const allowedKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/
   if (!allowedKorean.test(value)) {
-    return '한글만 사용할 수 있습니다.'
+    return '한글만 입력할 수 있습니다.'
   }
   return true
 })

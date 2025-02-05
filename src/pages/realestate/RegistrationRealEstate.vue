@@ -14,7 +14,7 @@ const { handleSubmit } = useForm({
     roadAddress: 'required:도로명 주소',
     parcelAddress: 'required:지번 주소',
     postcode: 'required:우편번호',
-    buildingName: 'required:물건번호',
+    buildingName: 'required:물건명',
     detailAddress: 'required:상세 주소|minMax:상세 주소,1,30|allowedKoreanEnglishNumberSpecialCharacter',
     buildingType: 'required:물건 유형',
     supplyArea: 'required:공급 면적',
