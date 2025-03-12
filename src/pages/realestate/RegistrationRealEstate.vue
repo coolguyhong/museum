@@ -2,10 +2,10 @@
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import ContentTitle from '@/components/ContentTitle.vue'
 import VCurrencyField from '@/components/VCurrencyField.vue'
-import {ref} from 'vue'
-import {useField, useForm} from 'vee-validate'
-import {addDate, getFormatDate} from '@/utils/date.js'
-import {isEmpty} from "@/utils/validation.js";
+import { ref } from 'vue'
+import { useField, useForm } from 'vee-validate'
+import { addDate, getFormatDate } from '@/utils/date.js'
+import { isEmpty } from "@/utils/validation.js";
 
 const isValid = ref(false)
 const { handleSubmit } = useForm({
