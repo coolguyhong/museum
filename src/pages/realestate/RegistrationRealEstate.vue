@@ -5,10 +5,11 @@ import VCurrencyField from '@/components/VCurrencyField.vue'
 import { ref } from 'vue'
 import { useField, useForm } from 'vee-validate'
 import { addDate, getFormatDate } from '@/utils/date.js'
-import { isEmpty } from "@/utils/validation.js";
+import { isEmpty } from '@/utils/validation.js'
+import { useRouter } from 'vue-router'
+// import { useAxios } from "@vueuse/integrations/useAxios";
 
-const isValid = ref(false)
-const { handleSubmit } = useForm({
+const { handleSubmit, meta } = useForm({
   validationSchema: {
     ownerName: 'required:소유주|minMax:소유주,1,10|allowedKoreanCharacter',
     roadAddress: 'required:도로명 주소',
@@ -21,15 +22,8 @@ const { handleSubmit } = useForm({
     exclusiveArea: 'required:전용 면적',
     purchaseDate: 'required:매수일',
     purchasePrice: 'required:매수 가격',
-    housingRentalType: 'required:주택임대 유형',
-    housingRentalStartDt: 'required:임대개시일',
-    housingRentalDutyEndDt: 'required:의무 임대종료일'
   },
 })
-const submit = handleSubmit(values => {
-  alert(JSON.stringify(values, null, 2))
-})
-
 const ownerName = useField('ownerName')
 const roadAddress = useField('roadAddress')
 const parcelAddress = useField('parcelAddress')
@@ -46,10 +40,18 @@ const kbMarketPrice = useField('kbMarketPrice')
 const techMarketPrice = useField('techMarketPrice')
 const publicMarketPrice = useField('publicMarketPrice')
 const isHousingRentalBusiness = ref(true)
+// TODO 별도 validation 추가
 const housingRentalType = useField('housingRentalType')
-const housingRentalStartDt = useField('housingRentalStartDt')
-const housingRentalDutyEndDt = useField('housingRentalDutyEndDt')
-const displayHousingRentalDutyEndDt = ref('')
+const housingRentalStartDate = useField('housingRentalStartDate')
+const housingRentalDutyEndDate = useField('housingRentalDutyEndDate')
+const displayHousingRentalDutyEndDate = ref('')
+
+const submit = handleSubmit((values) => {
+  console.log(values)
+  // TODO values 값 수정해서 서버 보내기
+  alert(JSON.stringify(values, null, 2))
+  // execute({ data: JSON.stringify(values, null, 2)})
+})
 
 // 주소
 const isScriptLoaded = ref(false)
@@ -82,9 +84,9 @@ const openPostcodePopup = () => {
 const changePurchaseDate = (value) => {
   purchaseDate.value.value = getFormatDate(value, 'YYYY-MM-DD')
 }
-const changeHousingRentalStartDt = (value) => {
-  housingRentalStartDt.value.value = getFormatDate(value, 'YYYY-MM-DD')
-  setHousingRentalDutyEndDt()
+const changeHousingRentalStartDate = (value) => {
+  housingRentalStartDate.value.value = getFormatDate(value, 'YYYY-MM-DD')
+  sethousingRentalDutyEndDate()
 }
 const housingRentalTypeItems = [
   { name: '5년임대주택(민간)', duration: 5 },
@@ -99,24 +101,38 @@ const housingRentalTypeItems = [
   { name: '공공지원민간임대주택(10년)', duration: 10 },
 ]
 const changeHousingRentalType = () => {
-  if (isEmpty(housingRentalStartDt.value.value)) {
+  if (isEmpty(housingRentalStartDate.value.value)) {
     return
   }
-  setHousingRentalDutyEndDt()
+  sethousingRentalDutyEndDate()
 }
 
-const setHousingRentalDutyEndDt = () => {
-  housingRentalDutyEndDt.value.value = getFormatDate(
-    addDate(housingRentalStartDt.value.value, housingRentalType.value.value.duration, 'year'), 'YYYY-MM-DD')
-  displayHousingRentalDutyEndDt.value = getFormatDate(housingRentalDutyEndDt.value.value, 'MM/DD/YYYY')
+const sethousingRentalDutyEndDate = () => {
+  housingRentalDutyEndDate.value.value = getFormatDate(
+    addDate(housingRentalStartDate.value.value, housingRentalType.value.value.duration, 'year'), 'YYYY-MM-DD')
+  displayHousingRentalDutyEndDate.value = getFormatDate(housingRentalDutyEndDate.value.value, 'MM/DD/YYYY')
 }
 
 const changeHousingRentalBusiness = () => {
-  housingRentalType.resetField()
-  housingRentalStartDt.resetField()
-  housingRentalDutyEndDt.resetField()
-  displayHousingRentalDutyEndDt.value = ''
+  housingRentalType.value.value = ''
+  housingRentalStartDate.value.value = ''
+  housingRentalDutyEndDate.value.value = ''
+  displayHousingRentalDutyEndDate.value = ''
 }
+
+const router = useRouter()
+const cancel = () => {
+  router.push({ name: 'RealEstate' })
+}
+// const { execute } = useAxios('/v1/real-estates', { method: 'POST'}, {
+//   onSuccess: () => {
+//     router.push({ name: 'RealEstate' })
+//   },
+//   onError: (error) => {
+//     console.log(error)
+//     alert('부동산 물건 등록 실패')
+//   }
+// })
 </script>
 
 <template>
@@ -140,10 +156,7 @@ const changeHousingRentalBusiness = () => {
           variant="flat"
         >
           <v-card-text>
-            <v-form
-              v-model="isValid"
-              @submit.prevent="submit"
-            >
+            <form @submit.prevent="submit">
               <v-row>
                 <v-col cols="10">
                   <v-text-field
@@ -337,8 +350,8 @@ const changeHousingRentalBusiness = () => {
                     clearable
                     prepend-icon=""
                     prepend-inner-icon="$calendar"
-                    :error-messages="housingRentalStartDt.errorMessage.value"
-                    @update:model-value="changeHousingRentalStartDt"
+                    :error-messages="housingRentalStartDate.errorMessage.value"
+                    @update:model-value="changeHousingRentalStartDate"
                   />
                 </v-col>
               </v-row>
@@ -348,11 +361,11 @@ const changeHousingRentalBusiness = () => {
               >
                 <v-col cols="10">
                   <v-text-field
-                    v-model="displayHousingRentalDutyEndDt"
+                    v-model="displayHousingRentalDutyEndDate"
                     readonly
                     label="의무 임대종료일*"
                     prepend-inner-icon="$calendar"
-                    :error-messages="housingRentalDutyEndDt.errorMessage.value"
+                    :error-messages="housingRentalDutyEndDate.errorMessage.value"
                   />
                 </v-col>
               </v-row>
@@ -361,6 +374,7 @@ const changeHousingRentalBusiness = () => {
                   <v-btn
                     block
                     x-large
+                    @click="cancel"
                   >
                     취소
                   </v-btn>
@@ -371,7 +385,7 @@ const changeHousingRentalBusiness = () => {
                     x-large
                     color="primary"
                     type="submit"
-                    :disabled="!isValid"
+                    :disabled="!meta.valid"
                   >
                     등록
                   </v-btn>
@@ -380,7 +394,7 @@ const changeHousingRentalBusiness = () => {
                   <v-spacer />
                 </v-col>
               </v-row>
-            </v-form>
+            </form>
           </v-card-text>
         </v-card>
       </v-col>

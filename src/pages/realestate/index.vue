@@ -5,6 +5,7 @@ import { ref } from 'vue'
 import { getFormatDate } from '@/utils/date.js'
 import { useAxios } from '@vueuse/integrations/useAxios'
 import { krw10000Trunc, querySearchParams } from '@/utils/common.js'
+import { useRouter } from 'vue-router'
 
 const itemsPerPage = ref(10)
 const headers = ref([
@@ -93,8 +94,9 @@ const moveToDetail = (item) => {
 const deleteItem = (item) => {
   alert('deleteItem: ' + item.id)
 }
+const router = useRouter()
 const register = () => {
-  alert('moteToRegister')
+  router.push({ name: 'RegistrationRealEstate' })
 }
 </script>
 
