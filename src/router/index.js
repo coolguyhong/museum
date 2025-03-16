@@ -1,5 +1,5 @@
 // Composables
-import {createRouter, createWebHistory} from 'vue-router/auto'
+import { createRouter, createWebHistory } from 'vue-router/auto'
 
 import AppMain from '@/components/layout/AppMain.vue'
 import Main from '@/pages/index.vue'

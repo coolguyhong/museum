@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const items = ref([
-  { title: 'Grid System', icon: 'mdi-grid-large', to: '/grid-system' },
+  { title: '부동산 물건', icon: 'mdi-domain', to: '/real-estate' },
   { title: 'Grid List Page', icon: 'mdi-view-grid-outline', to: '/grid-list-page' },
   { title: 'Breakpoints', icon: 'mdi-format-page-break', to: '/breakpoints' },
 ])
@@ -10,9 +10,17 @@ const items = ref([
 
 <template>
   <v-navigation-drawer>
-    <v-list
-      :items="items"
-    />
+    <v-list nav>
+      <v-list-item
+        v-for="(item, index) in items"
+        :key="index"
+        :to="item.to"
+        :title="item.title"
+        :prepend-icon="item.icon"
+        active-class="bg-primary"
+        class="py-1"
+      />
+    </v-list>
   </v-navigation-drawer>
 </template>
 
