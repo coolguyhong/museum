@@ -7,7 +7,7 @@ import { useField, useForm } from 'vee-validate'
 import { addDate, getFormatDate } from '@/utils/date.js'
 import { isEmpty } from '@/utils/validation.js'
 import { useRouter } from 'vue-router'
-// import { useAxios } from "@vueuse/integrations/useAxios";
+import { useAxios } from '@vueuse/integrations/useAxios'
 
 const { handleSubmit, meta } = useForm({
   validationSchema: {
@@ -22,6 +22,10 @@ const { handleSubmit, meta } = useForm({
     exclusiveArea: 'required:전용 면적',
     purchaseDate: 'required:매수일',
     purchasePrice: 'required:매수 가격',
+    rentalType: 'required:임대 유형',
+    deposit: 'required:보증금',
+    contractStartDate: 'required:계약 시작일',
+    contractEndDate: 'required:계약 종료일',
   },
 })
 const ownerName = useField('ownerName')
@@ -39,18 +43,26 @@ const purchasePrice = useField('purchasePrice')
 const kbMarketPrice = useField('kbMarketPrice')
 const techMarketPrice = useField('techMarketPrice')
 const publicMarketPrice = useField('publicMarketPrice')
+const rentalType = useField('rentalType')
+const deposit = useField('deposit')
+const monthlyRent = useField('monthlyRent')
+const contractStartDate = useField('contractStartDate')
+// TODO 계약 종료일이 계약 시작일 앞설 수 없다.
+const contractEndDate = useField('contractEndDate')
 const isHousingRentalBusiness = ref(true)
 // TODO 별도 validation 추가
+// 1. 필수값 입력 여부
 const housingRentalType = useField('housingRentalType')
 const housingRentalStartDate = useField('housingRentalStartDate')
 const housingRentalDutyEndDate = useField('housingRentalDutyEndDate')
 const displayHousingRentalDutyEndDate = ref('')
 
 const submit = handleSubmit((values) => {
-  console.log(values)
-  // TODO values 값 수정해서 서버 보내기
-  alert(JSON.stringify(values, null, 2))
-  // execute({ data: JSON.stringify(values, null, 2)})
+  const data = {
+    ...values,
+    isHousingRentalBusiness: isHousingRentalBusiness.value,
+  }
+  execute({ data })
 })
 
 // 주소
@@ -84,9 +96,15 @@ const openPostcodePopup = () => {
 const changePurchaseDate = (value) => {
   purchaseDate.value.value = getFormatDate(value, 'YYYY-MM-DD')
 }
+const changeContractStartDate = (value) => {
+  contractStartDate.value.value = getFormatDate(value, 'YYYY-MM-DD')
+}
+const changeContractEndDate = (value) => {
+  contractEndDate.value.value = getFormatDate(value, 'YYYY-MM-DD')
+}
 const changeHousingRentalStartDate = (value) => {
   housingRentalStartDate.value.value = getFormatDate(value, 'YYYY-MM-DD')
-  sethousingRentalDutyEndDate()
+  setHousingRentalDutyEndDate()
 }
 const housingRentalTypeItems = [
   { name: '5년임대주택(민간)', duration: 5 },
@@ -104,10 +122,10 @@ const changeHousingRentalType = () => {
   if (isEmpty(housingRentalStartDate.value.value)) {
     return
   }
-  sethousingRentalDutyEndDate()
+  setHousingRentalDutyEndDate()
 }
 
-const sethousingRentalDutyEndDate = () => {
+const setHousingRentalDutyEndDate = () => {
   housingRentalDutyEndDate.value.value = getFormatDate(
     addDate(housingRentalStartDate.value.value, housingRentalType.value.value.duration, 'year'), 'YYYY-MM-DD')
   displayHousingRentalDutyEndDate.value = getFormatDate(housingRentalDutyEndDate.value.value, 'MM/DD/YYYY')
@@ -124,15 +142,15 @@ const router = useRouter()
 const cancel = () => {
   router.push({ name: 'RealEstate' })
 }
-// const { execute } = useAxios('/v1/real-estates', { method: 'POST'}, {
-//   onSuccess: () => {
-//     router.push({ name: 'RealEstate' })
-//   },
-//   onError: (error) => {
-//     console.log(error)
-//     alert('부동산 물건 등록 실패')
-//   }
-// })
+const { execute } = useAxios('/v1/real-estates', { method: 'POST' }, {
+  onSuccess: () => {
+    router.push({ name: 'RealEstate' })
+  },
+  onError: (error) => {
+    console.log(error)
+    alert('부동산 물건 등록 실패')
+  }
+})
 </script>
 
 <template>
@@ -282,7 +300,7 @@ const cancel = () => {
                   <VCurrencyField
                     v-model="purchasePrice.value.value"
                     label="매수 가격*"
-                    suffix="만원"
+                    suffix="원"
                     :error-messages="purchasePrice.errorMessage.value"
                   />
                 </v-col>
@@ -292,7 +310,7 @@ const cancel = () => {
                   <VCurrencyField
                     v-model="kbMarketPrice.value.value"
                     label="KB 시세"
-                    suffix="만원"
+                    suffix="원"
                   />
                 </v-col>
               </v-row>
@@ -301,7 +319,7 @@ const cancel = () => {
                   <VCurrencyField
                     v-model="techMarketPrice.value.value"
                     label="부동산테크 시세"
-                    suffix="만원"
+                    suffix="원"
                   />
                 </v-col>
               </v-row>
@@ -310,6 +328,60 @@ const cancel = () => {
                   <VCurrencyField
                     v-model="publicMarketPrice.value.value"
                     label="공시가격(기준시가)"
+                    suffix="원"
+                  />
+                </v-col>
+              </v-row>
+              <v-row class="mt-0">
+                <v-col cols="10">
+                  <v-select
+                    v-model="rentalType.value.value"
+                    :items="['전세', '월세']"
+                    label="임대 유형*"
+                    :error-messages="rentalType.errorMessage.value"
+                  />
+                </v-col>
+              </v-row>
+              <v-row class="mt-0">
+                <v-col cols="10">
+                  <VCurrencyField
+                    v-model="deposit.value.value"
+                    label="보증금*"
+                    suffix="원"
+                    :error-messages="deposit.errorMessage.value"
+                  />
+                </v-col>
+              </v-row>
+              <v-row class="mt-0">
+                <v-col cols="10">
+                  <VCurrencyField
+                    v-model="monthlyRent.value.value"
+                    label="월세"
+                    suffix="원"
+                  />
+                </v-col>
+              </v-row>
+              <v-row class="mt-0">
+                <v-col cols="10">
+                  <v-date-input
+                    label="계약시작일*"
+                    clearable
+                    prepend-icon=""
+                    prepend-inner-icon="$calendar"
+                    :error-messages="contractStartDate.errorMessage.value"
+                    @update:model-value="changeContractStartDate"
+                  />
+                </v-col>
+              </v-row>
+              <v-row class="mt-0">
+                <v-col cols="10">
+                  <v-date-input
+                    label="계약종료일*"
+                    clearable
+                    prepend-icon=""
+                    prepend-inner-icon="$calendar"
+                    :error-messages="contractEndDate.errorMessage.value"
+                    @update:model-value="changeContractEndDate"
                   />
                 </v-col>
               </v-row>
